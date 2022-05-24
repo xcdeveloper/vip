@@ -291,6 +291,7 @@ docker run -dit \
     -v $NINJA_PATH:/ql/ninja \
     $MAPPING_JD_PORT \
     $MAPPING_NINJA_PORT \
+    --platform linux/amd64 \
     --name $CONTAINER_NAME \
     --hostname qinglong \
     --restart always \
