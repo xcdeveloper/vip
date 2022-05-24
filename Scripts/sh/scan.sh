@@ -1,52 +1,77 @@
-#/bin/sh
+#!/usr/bin/env bash
+#
 
-NOWTIME=$(date +%Y-%m-%d-%H-%M-%S)
-i=0
-
-while ((i<=0)); do
-    echo "扫描 NINJA 程序是否在线"
-    ps -fe|grep ninja|grep -v grep
-    if [ $? -ne 0 ]; then
-        i=0
-        echo $NOWTIME" 扫描结束！NINJA 掉线了不用担心马上重启！"
-        cd /ql
-        ps -ef|grep ninja|grep -v grep|awk '{print $1}'|xargs kill -9 && rm -rf /ql/ninja && rm -rf /ql/ninja
-        git clone https://github.com/MoonBegonia/ninja.git /ql/ninja  ## 拉取仓库
-        cd /ql/ninja/backend
-        pnpm install  ## 安装局部依赖
-        cp .env.example .env  ## 复制环境变量配置文件
-        cp sendNotify.js /ql/scripts/sendNotify.js ## 复制通知脚本到青龙容器
-        pm2 start
-        ps -fe|grep Daemon |grep -v grep 
-        if [ $? -ne 1 ]; then
-            i=1
-            echo $NOWTIME" NINJA 重启完成！"
-            curl "https://api.telegram.org/bot1878231691:AAG42gjTy0kQWyFnlUkgWDGXhMlyPl4oW18/sendMessage?chat_id=1565562101&text=NINJA 已重启完成"
-        fi
-    else
-        i=1
-        echo $NOWTIME" 扫描结束！NINJA 还在！"
-    fi
-done
-
-echo "开始扫描机器人是否在线！"
-ps -fe|grep jbot|grep -v grep
-if [ $? -ne 0 ]; then
-    echo $NOWTIME" 扫描结束！不好了不好了机器人掉线了，准备重启！"
-    nohup python3 -m jbot >/dev/null 2>&1 &
-    echo $NOWTIME"  扫描结束！机器人准备重启完成！"
-    curl "https://api.telegram.org/bot1878231691:AAG42gjTy0kQWyFnlUkgWDGXhMlyPl4oW18/sendMessage?chat_id=1565562101&text=扫描结束！机器人准备重启完成！"
-else
-    echo $NOWTIME" 扫描结束！机器人还在！" 
-fi
-
-echo "开始扫描静态解析是否在线！"
-ps -fe|grep nginx|grep -v grep
-if [ $? -ne 0 ]; then
-    echo $NOWTIME" 扫描结束！Nginx 静态解析停止了！准备重启！"
-    nginx -c /etc/nginx/nginx.conf
-    echo $NOWTIME" Nginx 静态解析重启完成！"
-    curl "https://api.telegram.org/bot1878231691:AAG42gjTy0kQWyFnlUkgWDGXhMlyPl4oW18/sendMessage?chat_id=1565562101&text= Nginx 静态解析重启完成！"
-else
-    echo $NOWTIME"  扫描结束！Nginx 静态解析正常呢！" 
-fi
+# 青龙一键安装脚本
+# GitHub仓库： https://github.com/FlechazoPh/QLDependency
+TIME() {
+[[ -z "$1" ]] && {
+	echo -ne " "
+} || {
+     case $1 in
+	r) export Color="\e[31;1m";;
+	g) export Color="\e[32;1m";;
+	b) export Color="\e[34;1m";;
+	y) export Color="\e[33;1m";;
+	z) export Color="\e[35;1m";;
+	l) export Color="\e[36;1m";;
+      esac
+	[[ $# -lt 2 ]] && echo -e "\e[36m\e[0m ${1}" || {
+		echo -e "\e[36m\e[0m ${Color}${2}\e[0m"
+	 }
+      }
+}
+echo
+echo
+echo
+TIME l "安装依赖..."
+echo
+TIME y "安装依赖需要时间，请耐心等待!"
+echo
+sleep 3
+echo
+echo
+cd /ql
+npm install -g npm
+cd /ql
+npm install -g png-js
+cd /ql
+npm install -g date-fns
+cd /ql
+npm install -g axios
+cd /ql
+npm install -g crypto-js
+cd /ql
+npm install -g ts-md5
+cd /ql
+npm install -g tslib
+cd /ql
+npm install -g @types/node
+cd /ql
+npm install -g requests
+cd /ql
+npm install -g tough-cookie
+cd /ql
+npm install -g jsdom
+cd /ql
+npm install -g download
+cd /ql
+npm install -g tunnel
+cd /ql
+npm install -g fs
+cd /ql
+npm install -g ws
+cd /ql
+npm install -g form-data
+cd /ql
+pip3 install requests
+cd /ql
+cd /ql/scripts/ && apk add --no-cache build-base g++ cairo-dev pango-dev giflib-dev && npm i && npm i -S ts-node typescript @types/node date-fns axios png-js canvas --build-from-source
+cd /ql
+apk add --no-cache build-base g++ cairo-dev pango-dev giflib-dev && cd scripts && npm install canvas --build-from-source
+cd /ql
+apk add python3 zlib-dev gcc jpeg-dev python3-dev musl-dev freetype-dev
+cd /ql
+echo
+TIME g "依赖安装完毕..."
+echo
+exit 0
